@@ -1,9 +1,12 @@
-# Removes foreign language data from the data set.
+# Cleans card data for Machine Learning input and writes it to cleaned_cards.json.
+# Takes file name of json card data to be cleaned as a command line argument.
+# Example call: python .\CleanData.py "AllPrintings.json"
 # Data from https://mtgjson.com/api/v5/AllPrintings.json (accessed 8/4/21)
 
 import json
+import sys
 
-f = open('AllPrintings.json', 'r', encoding='utf-8')
+f = open(sys.argv[1], 'r', encoding='utf-8')
 all_cards = json.load(f)
 seen_cards = set()
 cleaned_cards = {
@@ -22,9 +25,6 @@ for item in all_cards['data']:
   for card in set['cards']:
     if card['name'] not in seen_cards and card['borderColor'] == 'black':
       seen_cards.add(card['name'])
-      card['foreignData'] = []
-      if 'text' in card:
-        card['text'].replace('\u2212', '-')
       clean_card = {
         'name': card['name'],
         'manaCost': card['manaCost'] if 'manaCost' in card else '',
