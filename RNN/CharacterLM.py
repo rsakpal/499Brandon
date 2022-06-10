@@ -1,4 +1,6 @@
+import os
 import tensorflow as tf
+#import numpy as np
 from numpy import array
 from pickle import dump
 from pickle import load
@@ -13,10 +15,9 @@ from keras.preprocessing.sequence import pad_sequences
 
 # load doc into memory
 def load_doc(filename):
-  file = open(filename, 'r')
-  text = file.read()
-  file.close()
-  return text
+    with open(filename, 'r') as f:
+        text = f.read()
+    return text
 
 # save tokens to file, one dialog per line
 def save_doc(lines, filename):
@@ -28,12 +29,13 @@ def save_doc(lines, filename):
 # Define models
 def define_model(X):
   model = Sequential()
-  model.add(LSTM(100, input_shape=(X.shape[1], X.shape[2])))
+  model.add(LSTM(100, input_shape=(X.shape[1], X.shape[2]), return_sequences=True))
+  #model.add(LSTM(100, return_sequences=True))
+  model.add(LSTM(100))
   model.add(Dense(vocab_size, activation='softmax'))
   # compile model
   model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-  model.summary()
-  plot_model(model, to_file='model.png', show_shapes=True)
+  #model.summary()
   return model
 
 # Generate a sequence of characters with a language model
@@ -63,7 +65,8 @@ def generate_seq(model, mapping, seq_length, seed_text, n_chars):
 
 # Data Preparation
 
-raw_text = load_doc('all_creatures.txt')
+PATH = os.path.join(os.path.dirname(__file__), '..', 'resources', 'all_creatures_2.txt')
+raw_text = load_doc(PATH).replace('\n', ' % ')
 
 tokens = raw_text.split()
 raw_text = ' '.join(tokens)
@@ -76,12 +79,15 @@ for i in range(length, len(raw_text)):
   sequences.append(seq)
 print('Total Sequences: %d' % len(sequences))
 
-out_filename = 'creature_sequences.txt'
+out_filename = 'char_sequences_5.txt'
 save_doc(sequences, out_filename)
 
 # Train Language Model
 
-in_filename = 'creature_sequences.txt'
+# Use CPU if memory requirements are too large for GPU
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+
+in_filename = 'char_sequences_5.txt'
 raw_text = load_doc(in_filename)
 lines = raw_text.split('\n')
 
@@ -95,7 +101,7 @@ for line in lines:
 vocab_size = len(mapping)
 print('Vocabulary Size: %d' % vocab_size)
 
-# Split input (characters 1-10) and output (character 11)
+# Split input (characters 1-n) and output (character n+1)
 sequences = array(sequences)
 X, y = sequences[:,:-1], sequences[:,-1]
 sequences = [to_categorical(x, num_classes=vocab_size) for x in X]
@@ -105,8 +111,9 @@ y = to_categorical(y, num_classes=vocab_size)
 # define the model
 model = define_model(X)
 # fit model
-model.fit(X, y, epochs=30, verbose=2)
+# batch size = 256?
+model.fit(X, y, batch_size=32, epochs=20, validation_split=0.1, verbose=2)
 # save model to file
-model.save('model.h5')
+model.save('char_model_5.h5')
 # save mapping
-dump(mapping, open('mapping.pk1', 'wb'))
+dump(mapping, open('char_mapping_5.pk1', 'wb'))

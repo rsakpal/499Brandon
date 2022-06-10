@@ -37,6 +37,7 @@ def generate_cards(model, mapping, seq_length, n_cards, seed_text='S|| '):
       in_text += out_char
       end = in_text[-3:]
     output += in_text + '\n\n'
+    print(output)
   return output
 
 def main():
@@ -47,7 +48,8 @@ def main():
   model = load_model(model_filename)
   # load the mapping
   mapping = load(open(mapping_filename, 'rb'))
-  print(generate_cards(model, mapping, 15, int(num_cards)))
+  seq_length = 15
+  print(generate_cards(model, mapping, seq_length, int(num_cards)))
 
 if __name__ == '__main__':
   main()
