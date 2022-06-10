@@ -1,3 +1,7 @@
 *.json
-all_creatures.txt
-creature_sequences.txt
+*.txt
+*.h5
+*.png
+*.csv
+*.pk1
+RL/*
