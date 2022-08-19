@@ -72,7 +72,7 @@ tokens = raw_text.split()
 raw_text = ' '.join(tokens)
 #print(raw_text)
 
-length = 15
+length = 30
 sequences = list()
 for i in range(length, len(raw_text)):
   seq = raw_text[i-length:i+1]
@@ -112,7 +112,7 @@ y = to_categorical(y, num_classes=vocab_size)
 model = define_model(X)
 # fit model
 # batch size = 256?
-model.fit(X, y, batch_size=32, epochs=20, validation_split=0.1, verbose=2)
+model.fit(X, y, batch_size=32, epochs=25, validation_split=0.1, verbose=2)
 # save model to file
 model.save('char_model_5.h5')
 # save mapping

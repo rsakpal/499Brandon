@@ -48,7 +48,6 @@ def generate_card_vocabs(cards):
   return vocabs
 
 
-
 def calculate_cosine_score(base_document, documents):
   vectorizer = TfidfVectorizer()
   if base_document in documents:
@@ -57,7 +56,7 @@ def calculate_cosine_score(base_document, documents):
   embeddings = vectorizer.fit_transform(documents)
   cosine_similarities = cosine_similarity(embeddings[0:1], embeddings[1:]).flatten()
   documents.remove(base_document)
-  print(cosine_similarities)
+  print(round(cosine_similarities[0], 3))
 
   scores = [score for _, score in enumerate(cosine_similarities)]
   max_score = max(scores)
@@ -113,11 +112,11 @@ def predict_score(model, input, max_len):
   pred = model.predict(encoded, verbose=0)
   return pred
 
-PATH = os.path.join(os.path.dirname(__file__), '..', 'resources', 'all_creatures_2.txt')
+PATH = os.path.join(os.path.dirname(__file__), 'resources', 'all_creatures_2.txt')
 with open(PATH, 'r') as f:
   documents = f.read().split('\n')
 
-#documents = ['\n'.join(documents)]
+documents = ['\n'.join(documents)]
 
 cards = [
   'S|| Legot Spirit | flying when @ enters the battlefield, you may put a creature token with flying.) | 2/2 ||E',
@@ -131,6 +130,17 @@ cards = [
   'S|| Us, the Racketh | {2}{G} | Creature Elf Druid | when @ enters the battlefield, if it enters the battlefield, denture that was next turn. encole a creature card from a graveyard, sacrifice @ from a graveyard. | 2/2 ||E',
   'S|| Uros, Slite Drover | {3}{W}{U}{B}{R} | Legendary Creature Human Pirate | you may have a card and you lose 2 life and draw an elster — @\'s power and toughness are each equal to the number of +1/+1 counters on it. whenever you cast a spirit or arcane spell, put a +1/+1 counter on @. | 5/5 ||E',
   'S|| forsaken drifters | {3}{B} | creature zombie | when @ dies, mill four cards. | 4/2 ||E'
+]
+
+cards = [
+  's|| a an - a any the an a an - exile the exile 2 2 cards 1 2 {c} 2 2 2 2 white creature token you mana dealt phase combat . | 2 / 0 ||e',
+  's|| any the a an - any a an combat end the an anywhere a any combat the and goblin warrior : this creature deals 1 2 + 1 {r} : regenerate @ deals 1 damage + 6 until end of combat . | 1 / 1 ||e',
+  's|| other . - : the giant , put up to one cards an opponent owns . @ becomes a , it can\'t be blocked . % whenever a player casts an instant or sorcery spell , @ gains trample until end of turn . ( to manifest the next 1 damage that would be dealt this turn . ( exile the spell with fewer permanents from anywhere until you lose 1 life . | 3 / 4 ||e',
+  's|| target . - {u} {u} | creature elemental monk | forestwalk ( this creature can\'t be blocked as long as defending player controls a forest . ) | 2 / 1 ||e',
+  's|| / / / 2 / 5 | ( an opponent wins a nontoken humans get + 1 / + 1 . % whenever you cast a wall more or more more cards are less . you may put that card on the bottom of your library face exile a land and this way card tails {g} . x is more . ||e',
+  's|| artifact creature elf wizard | 1 / 1 | {g} {g} , {t} : target creature gets + 2 / + 0 until end of turn . ||e',
+  's|| {2} {b} {g} | creature elf cleric | 2 / 2 | {1} {r} , {t} , discard a card : @ deals x damage to target opponent destroy that creature . ||e',
+  's|| {3} {w} {u} {b} {r} | legendary creature human pirate | 6 / 5 | trample % {r} : @ gets + 1 / + 1 until end of turn . ) % {b} {r} : @ gains deathtouch until end of turn . ||e'
 ]
 
 vectorizer = TfidfVectorizer()

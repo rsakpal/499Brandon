@@ -1,3 +1,4 @@
+from random import random
 from numpy.core.numeric import outer
 import tensorflow as tf
 import numpy as np
@@ -25,7 +26,8 @@ def generate_cards(model, mapping, seq_length, n_cards, seed_text='S|| '):
 
       # Add variability
       yhat = np.random.choice(len(predictions), p=predictions)
-      #yhat = model.predict_classes(encoded, verbose=0)
+      if random() < 0.75:
+        yhat = np.argmax(predictions)
 
       # reverse map integer to character
       out_char = ''
@@ -37,7 +39,6 @@ def generate_cards(model, mapping, seq_length, n_cards, seed_text='S|| '):
       in_text += out_char
       end = in_text[-3:]
     output += in_text + '\n\n'
-    print(output)
   return output
 
 def main():
@@ -48,7 +49,7 @@ def main():
   model = load_model(model_filename)
   # load the mapping
   mapping = load(open(mapping_filename, 'rb'))
-  seq_length = 15
+  seq_length = 30
   print(generate_cards(model, mapping, seq_length, int(num_cards)))
 
 if __name__ == '__main__':
